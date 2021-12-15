@@ -20,7 +20,8 @@ public class SlangWord {
                     continue;
                 }
                 ArrayList<String> slagMean = new ArrayList<>();
-                slagMean.add(tmp[1]);
+                String[] meaning = tmp[1].split("\\| ");
+                Collections.addAll(slagMean, meaning);
                 this.slangDictionary.put(tmp[0], slagMean);
                 prevKey = tmp[0];
             }
@@ -30,13 +31,15 @@ public class SlangWord {
         }
     }
     public ArrayList<String> findByWord(String word) {return this.slangDictionary.get(word);}
-    public ArrayList<String> findByMeaning(String definition){
-        ArrayList<String> result = new ArrayList<>();
+    public HashMap<String, ArrayList<String>> findByMeaning(String definition){
+        HashMap<String, ArrayList<String>> result = new HashMap<>();
         for (Map.Entry<String, ArrayList<String>> entry : this.slangDictionary.entrySet()) {
             ArrayList<String> meaning = entry.getValue();
             for (String s : meaning) {
                 if (s.toLowerCase().contains(definition.toLowerCase())) {
-                    result.add(entry.getKey());
+                    ArrayList<String> tmp = new ArrayList<>();
+                    tmp.add(s);
+                    result.put(entry.getKey(), tmp);
                 }
             }
         }
