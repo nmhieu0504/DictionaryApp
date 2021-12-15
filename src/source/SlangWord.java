@@ -3,8 +3,7 @@ package source;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 public class SlangWord {
     private HashMap<String, ArrayList<String>> slangDictionary;
@@ -30,5 +29,17 @@ public class SlangWord {
             System.out.println(e.getMessage());
         }
     }
-    public ArrayList<String> getter(String key) {return this.slangDictionary.get(key);}
+    public ArrayList<String> findByWord(String word) {return this.slangDictionary.get(word);}
+    public ArrayList<String> findByMeaning(String definition){
+        ArrayList<String> result = new ArrayList<>();
+        for (Map.Entry<String, ArrayList<String>> entry : this.slangDictionary.entrySet()) {
+            ArrayList<String> meaning = entry.getValue();
+            for (String s : meaning) {
+                if (s.toLowerCase().contains(definition.toLowerCase())) {
+                    result.add(entry.getKey());
+                }
+            }
+        }
+        return result;
+    }
 }

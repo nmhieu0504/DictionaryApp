@@ -5,7 +5,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Vector;
 
 public class Main {
     public static void main(String[] args) {
@@ -47,18 +46,53 @@ public class Main {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ArrayList<String> arrayList = new ArrayList<>();
-                arrayList = slangWord.getter(textField.getText());
-                String[] display;
-                if(arrayList == null) {
-                    display = new String[]{"Slang word not found!"};
-                }
-                else {
-                    display = new String[arrayList.size()];
-                    for (int i = 0; i < arrayList.size(); i++)
-                        display[i] = "- " + arrayList.get(i);
-                }
-                list.setListData(display);
+                JFrame searchFrame = new JFrame("Search");
+                JButton byDefinition = new JButton("Search by definition");
+                JButton byWord = new JButton("Search by word");
+                searchFrame.setLayout(new GridLayout());
+
+                byWord.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        ArrayList<String> arrayList = new ArrayList<>();
+                        arrayList = slangWord.findByWord(textField.getText());
+                        String[] display;
+                        if(arrayList == null) {
+                            display = new String[]{"Slang word not found!"};
+                        }
+                        else {
+                            display = new String[arrayList.size()];
+                            for (int i = 0; i < arrayList.size(); i++)
+                                display[i] = "- " + arrayList.get(i);
+                        }
+                        list.setListData(display);
+                        searchFrame.dispose();
+                    }
+                });
+
+                byDefinition.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        ArrayList<String> arrayList = new ArrayList<>();
+                        arrayList = slangWord.findByMeaning(textField.getText());
+                        String[] display;
+                        if(arrayList == null) {
+                            display = new String[]{"Slang word not found!"};
+                        }
+                        else {
+                            display = new String[arrayList.size()];
+                            for (int i = 0; i < arrayList.size(); i++)
+                                display[i] = "- " + arrayList.get(i);
+                        }
+                        list.setListData(display);
+                        searchFrame.dispose();
+                    }
+                });
+
+                searchFrame.add(byDefinition);
+                searchFrame.add(byWord);
+                searchFrame.pack();
+                searchFrame.setVisible(true);
             }
         });
 
