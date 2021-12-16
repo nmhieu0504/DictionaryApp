@@ -552,7 +552,56 @@ public class Main {
         }
     }
     public static void randomSlangWord(Main mainObj){
+        String randomWord = mainObj.slangWord.randomSlangWord();
+        ArrayList<String>meaning = mainObj.slangWord.findByWord(randomWord);
+        JFrame editSlangWordFrame = new JFrame("On this day slang word");
 
+        JPanel constraintPanel = new JPanel();
+        constraintPanel.setLayout(new GridBagLayout());
+
+        GridBagConstraints constraint = new GridBagConstraints();
+        constraint.anchor = GridBagConstraints.EAST;
+        constraint.gridx = 0;
+        constraint.gridy = 0;
+        constraint.weightx = 0;
+        constraint.weighty = 0;
+        constraint.ipadx = 5;
+        JLabel label = new JLabel("Slang Word:");
+        constraintPanel.add(label, constraint);
+
+        constraint.fill = GridBagConstraints.BOTH;
+        constraint.weightx = 1;
+        constraint.weighty = 1;
+        constraint.gridx = 1;
+        constraint.gridy = 0;
+        constraint.insets = new Insets(5,5,5,5);
+        JTextField slangWord = new JTextField(40);
+        slangWord.setText(randomWord);
+        constraintPanel.add(slangWord, constraint);
+
+        JTextField[] textFieldArray = new JTextField[meaning.size()];
+        for (int i = 0; i < meaning.size(); i++) {
+            constraint.anchor = GridBagConstraints.EAST;
+            constraint.gridx = 0;
+            constraint.gridy = i + 2;
+            constraint.weightx = 0;
+            constraint.weighty = 0;
+            constraint.ipadx = 5;
+            constraintPanel.add(new JLabel("Meaning " + (i + 1) + ":"), constraint);
+            constraint.fill = GridBagConstraints.BOTH;
+            constraint.weightx = 1;
+            constraint.weighty = 1;
+            constraint.gridx = 1;
+            constraint.gridy = i + 2;
+            constraint.insets = new Insets(5,5,5,5);
+            textFieldArray[i] = new JTextField(40);
+            textFieldArray[i].setText(meaning.get(i));
+            constraintPanel.add(textFieldArray[i], constraint);
+        }
+
+        editSlangWordFrame.add(constraintPanel);
+        editSlangWordFrame.pack();
+        editSlangWordFrame.setVisible(true);
     }
     public static void generateQuiz(Main mainObj){
 

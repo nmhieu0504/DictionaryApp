@@ -99,4 +99,13 @@ public class SlangWord {
     public void deleteSlangWord(String word){
         this.slangDictionary.remove(word);
     }
+
+    public String randomSlangWord(){
+        int randomNumber = (int) Math.floor(Math.random() * (this.slangDictionary.size())), idx = 0;
+        for (Map.Entry<String, ArrayList<String>> entry : this.slangDictionary.entrySet()) {
+            if(idx++ == randomNumber)
+                return entry.getKey();
+        }
+        return "";
+    }
 }
