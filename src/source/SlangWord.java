@@ -28,6 +28,7 @@ public class SlangWord {
                 prevKey = tmp[0];
             }
             bufferedReader.close();
+            this.slangDictionary.remove("Slag");
         } catch (
                 IOException e) {
             System.out.println(e.getMessage());
@@ -54,34 +55,33 @@ public class SlangWord {
         ArrayList<String> arrayList = new ArrayList<>();
         arrayList.add(meaning);
         this.slangDictionary.put(word, arrayList);
+        saveToFile("data/slang.txt");
     }
 
     public void overwriteSlangWord(String word, String meaning){
         this.slangDictionary.remove(word);
         addSlangWord(word, meaning);
+        saveToFile("data/slang.txt");
     }
 
     public void duplicateSlangWord(String word, String meaning){
         this.slangDictionary.get(word).add(meaning);
+        saveToFile("data/slang.txt");
     }
 
     public void saveToFile(String filename){
         try{
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filename));
-            Iterator<Map.Entry<String, ArrayList<String>>> iterator = this.slangDictionary.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<String, ArrayList<String>> entry = iterator.next();
+            for (Map.Entry<String, ArrayList<String>> entry : this.slangDictionary.entrySet()) {
                 StringBuilder lines = new StringBuilder(entry.getKey() + "`");
-
                 ArrayList<String> arrayList = entry.getValue();
                 for(int i = 0; i < arrayList.size(); i++)
                     if(i == arrayList.size() - 1)
                         lines.append(arrayList.get(i));
                     else
-                        lines.append(arrayList.get(i) + "|" + " ");
+                        lines.append(arrayList.get(i)).append("|").append(" ");
 
                 bufferedWriter.write(lines + "\n");
-                iterator.remove();
             }
             bufferedWriter.close();
         }
@@ -94,10 +94,12 @@ public class SlangWord {
         this.slangDictionary.remove(word);
         meaning.removeAll(Collections.singleton(""));
         this.slangDictionary.put(word, meaning);
+        saveToFile("data/slang.txt");
     }
 
     public void deleteSlangWord(String word){
         this.slangDictionary.remove(word);
+        saveToFile("data/slang.txt");
     }
 
     public String randomSlangWord(){
@@ -107,5 +109,9 @@ public class SlangWord {
                 return entry.getKey();
         }
         return "";
+    }
+    public String getMeaning(String word){
+        int randomNumber = (int) Math.floor(Math.random() * this.slangDictionary.get(word).size());
+        return this.slangDictionary.get(word).get(randomNumber);
     }
 }

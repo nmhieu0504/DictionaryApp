@@ -1,5 +1,7 @@
 package source;
 
+import com.sun.security.auth.module.JndiLoginModule;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -7,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 
 public class Main {
     SlangWord slangWord;
@@ -604,6 +607,161 @@ public class Main {
         editSlangWordFrame.setVisible(true);
     }
     public static void generateQuiz(Main mainObj){
+        JFrame frame = new JFrame("Quiz");
+        JPanel panel = new JPanel();
 
+        JButton buttonWord = new JButton("Quiz with Word");
+        JButton buttonDefinition = new JButton("Quiz with Definition");
+
+        buttonWord.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                quizWithWord(mainObj);
+            }
+        });
+
+        buttonDefinition.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                quizWithDefinition(mainObj);
+            }
+        });
+
+        panel.setLayout(new GridLayout());
+        panel.add(buttonWord);
+        panel.add(buttonDefinition);
+        frame.add(panel);
+        frame.pack();
+        frame.setVisible(true);
+    }
+    public static void quizWithWord(Main mainObj){
+        ArrayList<String> choices = new ArrayList<>();
+        for(int i = 0; i < 4; i++)
+            choices.add(mainObj.slangWord.randomSlangWord());
+        int randomNumber = (int) Math.floor(Math.random() * 3);
+        JFrame frame = new JFrame(choices.get(randomNumber) + "?");
+        JPanel panel = new JPanel(new GridLayout(2, 2));
+
+        JButton buttonA = new JButton(mainObj.slangWord.getMeaning(choices.get(0)));
+        JButton buttonB = new JButton(mainObj.slangWord.getMeaning(choices.get(1)));
+        JButton buttonC = new JButton(mainObj.slangWord.getMeaning(choices.get(2)));
+        JButton buttonD = new JButton(mainObj.slangWord.getMeaning(choices.get(3)));
+
+        buttonA.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(randomNumber == 0)
+                    JOptionPane.showMessageDialog(null,"RIGHT", "Result", JOptionPane.INFORMATION_MESSAGE);
+                else{
+                    JOptionPane.showMessageDialog(null,"WRONG", "Result", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        buttonB.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(randomNumber == 1)
+                    JOptionPane.showMessageDialog(null,"RIGHT", "Result", JOptionPane.INFORMATION_MESSAGE);
+                else{
+                    JOptionPane.showMessageDialog(null,"WRONG", "Result", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        buttonC.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(randomNumber == 2)
+                    JOptionPane.showMessageDialog(null,"RIGHT", "Result", JOptionPane.INFORMATION_MESSAGE);
+                else{
+                    JOptionPane.showMessageDialog(null,"WRONG", "Result", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        buttonD.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(randomNumber == 3)
+                    JOptionPane.showMessageDialog(null,"RIGHT", "Result", JOptionPane.INFORMATION_MESSAGE);
+                else{
+                    JOptionPane.showMessageDialog(null,"WRONG", "Result", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        panel.add(buttonA);
+        panel.add(buttonB);
+        panel.add(buttonC);
+        panel.add(buttonD);
+        frame.add(panel);
+        frame.pack();
+        frame.setVisible(true);
+    }
+    public static void quizWithDefinition(Main mainObj){
+        ArrayList<String> choices = new ArrayList<>();
+        for(int i = 0; i < 4; i++)
+            choices.add(mainObj.slangWord.randomSlangWord());
+        int randomNumber = (int) Math.floor(Math.random() * 3);
+        JFrame frame = new JFrame(mainObj.slangWord.getMeaning(choices.get(randomNumber)) + "?");
+        JPanel panel = new JPanel(new GridLayout(2, 2));
+
+        JButton buttonA = new JButton(choices.get(0));
+        JButton buttonB = new JButton(choices.get(1));
+        JButton buttonC = new JButton(choices.get(2));
+        JButton buttonD = new JButton(choices.get(3));
+
+        buttonA.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(randomNumber == 0)
+                    JOptionPane.showMessageDialog(null,"RIGHT", "Result", JOptionPane.INFORMATION_MESSAGE);
+                else{
+                    JOptionPane.showMessageDialog(null,"WRONG", "Result", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        buttonB.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(randomNumber == 1)
+                    JOptionPane.showMessageDialog(null,"RIGHT", "Result", JOptionPane.INFORMATION_MESSAGE);
+                else{
+                    JOptionPane.showMessageDialog(null,"WRONG", "Result", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        buttonC.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(randomNumber == 2)
+                    JOptionPane.showMessageDialog(null,"RIGHT", "Result", JOptionPane.INFORMATION_MESSAGE);
+                else{
+                    JOptionPane.showMessageDialog(null,"WRONG", "Result", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        buttonD.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(randomNumber == 3)
+                    JOptionPane.showMessageDialog(null,"RIGHT", "Result", JOptionPane.INFORMATION_MESSAGE);
+                else{
+                    JOptionPane.showMessageDialog(null,"WRONG", "Result", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        panel.add(buttonA);
+        panel.add(buttonB);
+        panel.add(buttonC);
+        panel.add(buttonD);
+        frame.add(panel);
+        frame.pack();
+        frame.setVisible(true);
     }
 }
