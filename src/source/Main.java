@@ -64,7 +64,7 @@ public class Main {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                deleteSlangWord(mainObj);
             }
         });
 
@@ -377,7 +377,7 @@ public class Main {
                     frame.dispose();
                 }
                 else
-                    JOptionPane.showMessageDialog(frame, "Slang word not found!", "Message", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(frame, "Slang word not found!", "Message", JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -474,5 +474,65 @@ public class Main {
         editSlangWordFrame.add(mainPanel);
         editSlangWordFrame.pack();
         editSlangWordFrame.setVisible(true);
+    }
+    public static void deleteSlangWord(Main mainObj){
+        JFrame frame = new JFrame("Delete a slang word");
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        GridBagConstraints constraint = new GridBagConstraints();
+        JPanel constrainPanel = new JPanel(new GridBagLayout());
+
+        constraint.fill = GridBagConstraints.BOTH;
+        constraint.weightx = 1;
+        constraint.weighty = 1;
+        constraint.gridx = 0;
+        constraint.gridy = 0;
+        constraint.insets = new Insets(5,5,5,5);
+        JLabel label = new JLabel("Slang word: ");
+        constrainPanel.add(label, constraint);
+
+        constraint.fill = GridBagConstraints.BOTH;
+        constraint.weightx = 1;
+        constraint.weighty = 1;
+        constraint.gridx = 1;
+        constraint.gridy = 0;
+        constraint.insets = new Insets(5,5,5,5);
+        JTextField searchField = new JTextField(40);
+        constrainPanel.add(searchField, constraint);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        JButton deleteButton = new JButton("Delete");
+        JButton cancelButton = new JButton("Cancel");
+        buttonPanel.add(deleteButton);
+        buttonPanel.add(Box.createRigidArea(new Dimension(20,0)));
+        buttonPanel.add(cancelButton);
+
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(mainObj.slangWord.findByWord(searchField.getText()) != null) {
+                    int confirm = JOptionPane.showConfirmDialog(frame, "Are you sure to delete this slang word", "Delete confirm", JOptionPane.YES_NO_OPTION);
+                    if(confirm == 0) {
+                        mainObj.slangWord.deleteSlangWord(searchField.getText());
+                        frame.dispose();
+                    }
+                }
+                else
+                    JOptionPane.showMessageDialog(frame, "Slang word not found!", "Message", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+            }
+        });
+
+        mainPanel.add(constrainPanel);
+        mainPanel.add(buttonPanel);
+        frame.add(mainPanel);
+        frame.pack();
+        frame.setVisible(true);
     }
 }

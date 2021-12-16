@@ -95,4 +95,8 @@ public class SlangWord {
         meaning.removeAll(Collections.singleton(""));
         this.slangDictionary.put(word, meaning);
     }
+
+    public void deleteSlangWord(String word){
+        this.slangDictionary.remove(word);
+    }
 }
