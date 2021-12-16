@@ -40,13 +40,12 @@ public class SlangWord {
         HashMap<String, ArrayList<String>> result = new HashMap<>();
         for (Map.Entry<String, ArrayList<String>> entry : this.slangDictionary.entrySet()) {
             ArrayList<String> meaning = entry.getValue();
-            for (String s : meaning) {
-                if (s.toLowerCase().contains(definition.toLowerCase())) {
-                    ArrayList<String> tmp = new ArrayList<>();
+            ArrayList<String> tmp = new ArrayList<>();
+            for (String s : meaning)
+                if (s.toLowerCase().contains(definition.toLowerCase()))
                     tmp.add(s);
-                    result.put(entry.getKey(), tmp);
-                }
-            }
+            if(tmp.size() > 0)
+                result.put(entry.getKey(), tmp);
         }
         return result;
     }
@@ -89,5 +88,11 @@ public class SlangWord {
         catch (IOException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public void editSlangWord(String word, ArrayList<String> meaning){
+        this.slangDictionary.remove(word);
+        meaning.removeAll(Collections.singleton(""));
+        this.slangDictionary.put(word, meaning);
     }
 }

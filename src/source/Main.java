@@ -9,14 +9,12 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    JTextField searchField;
     SlangWord slangWord;
     public Main(){}
     public static void main(String[] args) {
         Main myObj = new Main();
         myObj.slangWord = new SlangWord("data/slang.txt");
         Menu(myObj);
-//        myObj.slangWord.saveToFile("data/slang.txt");
     }
 
     public static void Menu(Main mainObj){
@@ -59,7 +57,7 @@ public class Main {
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                searchAndEdit(mainObj);
             }
         });
 
@@ -103,8 +101,6 @@ public class Main {
         menuFrame.add(mainPanel);
         menuFrame.pack();
         menuFrame.setVisible(true);
-
-//        mainObj.slangWord.saveToFile("data/slang.txt");
     }
     public static void search(Main mainObj){
         JFrame frame = new JFrame("Dictionary");
@@ -154,8 +150,7 @@ public class Main {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         String keyword = searchField.getText();
-                        ArrayList<String> arrayList = new ArrayList<>();
-                        arrayList = mainObj.slangWord.findByWord(keyword);
+                        ArrayList<String> arrayList = mainObj.slangWord.findByWord(keyword);
                         String[] display;
                         if(arrayList == null) {
                             display = new String[]{"Slang word not found!"};
@@ -181,10 +176,8 @@ public class Main {
                 byDefinition.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        HashMap<String, ArrayList<String>> result = new HashMap<>();
-                        result = mainObj.slangWord.findByMeaning(searchField.getText());
+                        HashMap<String, ArrayList<String>> result = mainObj.slangWord.findByMeaning(searchField.getText());
                         String[] display;
-                        String[] word;
                         if(result.size() == 0) {
                             display = new String[]{"Definition not found!"};
                         }
@@ -264,26 +257,26 @@ public class Main {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
-        JPanel labelPanel = new JPanel();
-        labelPanel.setLayout(new GridBagLayout());
+        JPanel constraintPanel = new JPanel();
+        constraintPanel.setLayout(new GridBagLayout());
         for (int i = 0; i < 2; ++i) {
-            GridBagConstraints c = new GridBagConstraints();
-            c.anchor = GridBagConstraints.EAST;
-            c.gridx = 0;
-            c.gridy = i;
-            c.weightx = 0;
-            c.weighty = 0;
-            c.ipadx = 5;
+            GridBagConstraints constraint = new GridBagConstraints();
+            constraint.anchor = GridBagConstraints.EAST;
+            constraint.gridx = 0;
+            constraint.gridy = i;
+            constraint.weightx = 0;
+            constraint.weighty = 0;
+            constraint.ipadx = 5;
             JLabel label = new JLabel(labelName[i]);
-            labelPanel.add(label, c);
-            c.fill = GridBagConstraints.BOTH;
-            c.weightx = 1;
-            c.weighty = 1;
-            c.gridx = 1;
-            c.gridy = i;
-            c.insets = new Insets(5,5,5,5);
+            constraintPanel.add(label, constraint);
+            constraint.fill = GridBagConstraints.BOTH;
+            constraint.weightx = 1;
+            constraint.weighty = 1;
+            constraint.gridx = 1;
+            constraint.gridy = i;
+            constraint.insets = new Insets(5,5,5,5);
             textFieldArray[i] = new JTextField(40);
-            labelPanel.add(textFieldArray[i], c);
+            constraintPanel.add(textFieldArray[i], constraint);
         }
         JPanel buttonPanel = new JPanel(new FlowLayout());
         JButton addButton = new JButton("Add");
@@ -337,11 +330,149 @@ public class Main {
                 addSlangWordFrame.dispose();
             }
         });
-        mainPanel.add(labelPanel);
+        mainPanel.add(constraintPanel);
         mainPanel.add(buttonPanel);
 
         addSlangWordFrame.add(mainPanel);
         addSlangWordFrame.pack();
         addSlangWordFrame.setVisible(true);
+    }
+    public static void searchAndEdit(Main mainObj){
+        JFrame frame = new JFrame("Search for slang word");
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        GridBagConstraints constraint = new GridBagConstraints();
+        JPanel constrainPanel = new JPanel(new GridBagLayout());
+
+        constraint.fill = GridBagConstraints.BOTH;
+        constraint.weightx = 1;
+        constraint.weighty = 1;
+        constraint.gridx = 0;
+        constraint.gridy = 0;
+        constraint.insets = new Insets(5,5,5,5);
+        JLabel label = new JLabel("Search: ");
+        constrainPanel.add(label, constraint);
+
+        constraint.fill = GridBagConstraints.BOTH;
+        constraint.weightx = 1;
+        constraint.weighty = 1;
+        constraint.gridx = 1;
+        constraint.gridy = 0;
+        constraint.insets = new Insets(5,5,5,5);
+        JTextField searchField = new JTextField(40);
+        constrainPanel.add(searchField, constraint);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        JButton addButton = new JButton("Search");
+        JButton cancelButton = new JButton("Cancel");
+        buttonPanel.add(addButton);
+        buttonPanel.add(Box.createRigidArea(new Dimension(20,0)));
+        buttonPanel.add(cancelButton);
+
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(mainObj.slangWord.findByWord(searchField.getText()) != null) {
+                    editSlangWord(mainObj, searchField.getText());
+                    frame.dispose();
+                }
+                else
+                    JOptionPane.showMessageDialog(frame, "Slang word not found!", "Message", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+            }
+        });
+
+        mainPanel.add(constrainPanel);
+        mainPanel.add(buttonPanel);
+        frame.add(mainPanel);
+        frame.pack();
+        frame.setVisible(true);
+    }
+    public static void editSlangWord(Main mainObj, String word){
+        ArrayList<String> meaning = mainObj.slangWord.findByWord(word);
+        JFrame editSlangWordFrame = new JFrame("Edit a slang word");
+
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        JPanel constraintPanel = new JPanel();
+        constraintPanel.setLayout(new GridBagLayout());
+
+        GridBagConstraints constraint = new GridBagConstraints();
+        constraint.anchor = GridBagConstraints.EAST;
+        constraint.gridx = 0;
+        constraint.gridy = 0;
+        constraint.weightx = 0;
+        constraint.weighty = 0;
+        constraint.ipadx = 5;
+        JLabel label = new JLabel("Slang Word:");
+        constraintPanel.add(label, constraint);
+
+        constraint.fill = GridBagConstraints.BOTH;
+        constraint.weightx = 1;
+        constraint.weighty = 1;
+        constraint.gridx = 1;
+        constraint.gridy = 0;
+        constraint.insets = new Insets(5,5,5,5);
+        JTextField slangWord = new JTextField(40);
+        slangWord.setText(word);
+        constraintPanel.add(slangWord, constraint);
+
+        JTextField[] textFieldArray = new JTextField[meaning.size()];
+        for (int i = 0; i < meaning.size(); i++) {
+            constraint.anchor = GridBagConstraints.EAST;
+            constraint.gridx = 0;
+            constraint.gridy = i + 2;
+            constraint.weightx = 0;
+            constraint.weighty = 0;
+            constraint.ipadx = 5;
+            constraintPanel.add(new JLabel("Meaning " + (i + 1) + ":"), constraint);
+            constraint.fill = GridBagConstraints.BOTH;
+            constraint.weightx = 1;
+            constraint.weighty = 1;
+            constraint.gridx = 1;
+            constraint.gridy = i + 2;
+            constraint.insets = new Insets(5,5,5,5);
+            textFieldArray[i] = new JTextField(40);
+            textFieldArray[i].setText(meaning.get(i));
+            constraintPanel.add(textFieldArray[i], constraint);
+        }
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        JButton saveButton = new JButton("Save");
+        JButton cancelButton = new JButton("Cancel");
+        buttonPanel.add(saveButton);
+        buttonPanel.add(Box.createRigidArea(new Dimension(20,0)));
+        buttonPanel.add(cancelButton);
+
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String word = slangWord.getText();
+                ArrayList<String>meaning = new ArrayList<>();
+                for (JTextField jTextField : textFieldArray) {
+                    meaning.add(jTextField.getText());
+                }
+                mainObj.slangWord.editSlangWord(word, meaning);
+                JOptionPane.showMessageDialog(editSlangWordFrame, "Slang word saved!", "Message", JOptionPane.INFORMATION_MESSAGE);
+                editSlangWordFrame.dispose();
+            }
+        });
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                editSlangWordFrame.dispose();
+            }
+        });
+
+        mainPanel.add(constraintPanel);
+        mainPanel.add(buttonPanel);
+        editSlangWordFrame.add(mainPanel);
+        editSlangWordFrame.pack();
+        editSlangWordFrame.setVisible(true);
     }
 }
