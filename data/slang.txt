@@ -159,8 +159,8 @@ $_$`Has money
 7DAW`Seven Days A Week
 8)`Cool
 8*`Kiss
-8-)`Cool
-8-|`Nerdy
+8-)`Cool 
+8-|`Nerdy 
 80S`The Eighties| 1980s
 8====D`Penis
 8===D`A Penis
@@ -1086,7 +1086,7 @@ BWM`Bisexual White Male| Bear With Me
 BWOI`Friend| buddy
 BWT`Misspelling of BTW
 BWTH`But What The Hell
-BWW`Buffalo Wild Wings
+BWW`Buffalo Wild Wings 
 BYAM`Between You And Me
 BYKI`Before You Know It
 BYKT`But You Know That
@@ -1157,7 +1157,7 @@ CBGB`Country BlueGrass Blues
 CBH`Child Bearing Hips
 CBI`Californian Bureau of Investigation| Confederation of British Industry
 CBLTH`Can't Breathe Laughing Too Hard
-CBR`Captive Bead Ring
+CBR`Captive Bead Ring 
 CBS`Can't Be Stuffed
 CBT`Cognitive Behavioural Therapy
 CC`Credit Card| Carbon Copy| Crowd Control| Country Code
@@ -1445,7 +1445,7 @@ CUL`See You Later.
 CUL8ER`See You Later
 CUL8R`See You Later
 CULA`See You Later, Alligator
-CULO`Ass
+CULO`Ass 
 CUMBERBITCH`Female Fan Of Benedict Cumberbatch
 CUOL`See You On Line
 CUPPA`Cup of tea
@@ -2561,7 +2561,7 @@ GOWM`Go Out With Me
 GOY`Non-Jewish person
 GP`General Principle
 GPA`Grade-Point Average
-GPC`Generic Pack of Cigarettes| Get/Post/Cookie
+GPC`Generic Pack of Cigarettes| Get/Post/Cookie 
 GPL`General Public License
 GPOY`Gratuitous Picture Of Yourself
 GPOYW`Gratuitous Picture Of Yourself Wednesday
@@ -3025,7 +3025,7 @@ ICBINB`I Can't Believe It's Not Butter
 ICBM`Intercontinental Ballistic Missile
 ICBSST`I Can't Believe She Said That
 ICBW`It Could Be Worse
-ICC`Ice Crown Citadel
+ICC`Ice Crown Citadel 
 ICCL`I Couldn't Care Less
 ICE`Diamonds| Crystal meth| Kill
 ICK`UGH
@@ -3918,7 +3918,7 @@ LOMO`Lights Out, Missionary Only
 LOO`Toilet
 LOOL`Laughing Outlandishly Out Loud
 LOONY`Crazy
-LOOT`Money
+LOOT`Money 
 LOP`Stupid person
 LOPL`LOL
 LOQ`Laugh Out Quietly
@@ -5286,7 +5286,7 @@ POTD`Post Of The Day
 POTO`Phantom Of The Opera
 POTS`Parents Over The Shoulder| parents watching, I can't really talk
 POTUS`President of the United States
-POTW`Patient of the Week
+POTW`Patient of the Week 
 POTY`Post Of The Year
 POV`Point Of View
 POW`Prisioner of War

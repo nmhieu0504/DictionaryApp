@@ -71,21 +71,21 @@ public class Main {
         resetButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                resetToOrigin(mainObj);
             }
         });
 
         randomButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                randomSlangWord(mainObj);
             }
         });
 
         quizButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                generateQuiz(mainObj);
             }
         });
 
@@ -534,5 +534,27 @@ public class Main {
         frame.add(mainPanel);
         frame.pack();
         frame.setVisible(true);
+    }
+    public static void resetToOrigin(Main mainObj){
+        try{
+            BufferedReader bufferedReader = new BufferedReader(new FileReader("data/slang(origin).txt"));
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("data/slang.txt"));
+            String lines;
+            while((lines = bufferedReader.readLine()) != null)
+                bufferedWriter.write(lines + "\n");
+            bufferedReader.close();
+            bufferedWriter.close();
+            mainObj.slangWord = new SlangWord("data/slang.txt");
+            JOptionPane.showMessageDialog(null, "Slang words list reset!", "Reset origin slang words list", JOptionPane.INFORMATION_MESSAGE);
+        }
+        catch (IOException exception){
+            System.out.println(exception.getMessage());
+        }
+    }
+    public static void randomSlangWord(Main mainObj){
+
+    }
+    public static void generateQuiz(Main mainObj){
+
     }
 }
