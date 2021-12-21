@@ -1,19 +1,18 @@
 package source;
 
-import com.sun.security.auth.module.JndiLoginModule;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
-import java.util.List;
 
 public class Main {
     SlangWord slangWord;
     public Main(){}
+
     public static void main(String[] args) {
         Main myObj = new Main();
         myObj.slangWord = new SlangWord("data/slang.txt");
@@ -42,49 +41,42 @@ public class Main {
                 search(mainObj);
             }
         });
-
         historyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                viewHistory();
+                viewHistory(mainObj);
             }
         });
-
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 addSlangWord(mainObj);
             }
         });
-
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 searchAndEdit(mainObj);
             }
         });
-
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 deleteSlangWord(mainObj);
             }
         });
-
         resetButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 resetToOrigin(mainObj);
             }
         });
-
         randomButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 randomSlangWord(mainObj);
             }
         });
-
         quizButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -104,42 +96,55 @@ public class Main {
         menuFrame.add(mainPanel);
         menuFrame.pack();
         menuFrame.setVisible(true);
+        menuFrame.setLocationRelativeTo(null);
     }
+
     public static void search(Main mainObj){
         JFrame frame = new JFrame("Dictionary");
-
+        String[] title = {"Slang Word", "Meaning"};
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         GridBagConstraints constraint = new GridBagConstraints();
-
         JPanel constrainPanel = new JPanel(new GridBagLayout());
-        constraint.fill = GridBagConstraints.BOTH;
+
+        constraint.fill = GridBagConstraints.WEST;
         constraint.weightx = 1;
         constraint.weighty = 1;
         constraint.gridx = 0;
         constraint.gridy = 0;
         constraint.insets = new Insets(5,5,5,5);
-        JTextField searchField = new JTextField(40);
-        constrainPanel.add(searchField, constraint);
+        JLabel searchLabel = new JLabel("Slang word:");
+        constrainPanel.add(searchLabel, constraint);
 
         constraint.fill = GridBagConstraints.BOTH;
         constraint.weightx = 1;
         constraint.weighty = 1;
+        constraint.gridx = 1;
+        constraint.gridy = 0;
+        constraint.insets = new Insets(5,5,5,5);
+        JTextField searchField = new JTextField(40);
+        constrainPanel.add(searchField, constraint);
+
+        JButton button = new JButton("Search");
+        constraint.fill = GridBagConstraints.EAST;
+        constraint.weightx = 1;
+        constraint.weighty = 1;
+        constraint.gridx = 2;
+        constraint.gridy = 0;
+        constraint.insets = new Insets(5,5,5,5);
+        constrainPanel.add(button, constraint);
+
+        constraint.fill = GridBagConstraints.BOTH;
+        constraint.weightx = 1;
+        constraint.weighty = 1;
+        constraint.gridwidth = 3;
         constraint.gridx = 0;
         constraint.gridy = 1;
         constraint.insets = new Insets(5,5,5,5);
-        JList<String> list = new JList<>();
-        JScrollPane scrollPane = new JScrollPane(list);
+        DefaultTableModel model = new DefaultTableModel(new String[0][], title);
+        JTable table = new JTable(model);
+        JScrollPane scrollPane = new JScrollPane(table);
         constrainPanel.add(scrollPane, constraint);
-
-        JButton button = new JButton("Search");
-        constraint.fill = GridBagConstraints.SOUTH;
-        constraint.weightx = 1;
-        constraint.weighty = 1;
-        constraint.gridx = 0;
-        constraint.gridy = 2;
-        constraint.insets = new Insets(5,5,5,5);
-        constrainPanel.add(button, constraint);
 
         button.addActionListener(new ActionListener() {
             @Override
@@ -148,20 +153,20 @@ public class Main {
                 JButton byDefinition = new JButton("Search by definition");
                 JButton byWord = new JButton("Search by word");
                 searchFrame.setLayout(new GridLayout());
-
                 byWord.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        for(int i = model.getRowCount() - 1; i >= 0; i--)
+                            model.removeRow(i);
                         String keyword = searchField.getText();
                         ArrayList<String> arrayList = mainObj.slangWord.findByWord(keyword);
-                        String[] display;
                         if(arrayList == null) {
-                            display = new String[]{"Slang word not found!"};
+                            JOptionPane.showMessageDialog(null, "Slang word not found!", "Search failed!", JOptionPane.ERROR_MESSAGE);
                         }
                         else {
-                            display = new String[arrayList.size()];
-                            for (int i = 0; i < arrayList.size(); i++)
-                                display[i] = "- " + arrayList.get(i);
+                            for (String s : arrayList)
+                                model.addRow(new String[]{searchField.getText(), s});
+
                             try {
                                 BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("data/history.txt", true));
                                 bufferedWriter.write(keyword + "\n");
@@ -171,7 +176,6 @@ public class Main {
                                 System.out.println(exception.getMessage());
                             }
                         }
-                        list.setListData(display);
                         searchFrame.dispose();
                     }
                 });
@@ -179,21 +183,22 @@ public class Main {
                 byDefinition.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        for(int i = model.getRowCount() - 1; i >= 0; i--)
+                            model.removeRow(i);
                         HashMap<String, ArrayList<String>> result = mainObj.slangWord.findByMeaning(searchField.getText());
-                        String[] display;
                         if(result.size() == 0) {
-                            display = new String[]{"Definition not found!"};
+                            JOptionPane.showMessageDialog(null, "Definition not found!", "Search failed!", JOptionPane.ERROR_MESSAGE);
                         }
                         else {
-                            display = new String[result.size()];
                             Iterator<Map.Entry<String, ArrayList<String>>> iterator = result.entrySet().iterator();
-                            int idx = 0;
                             try {
                                 BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("data/history.txt", true));
                                 while (iterator.hasNext()) {
                                     Map.Entry<String, ArrayList<String>> entry = iterator.next();
                                     bufferedWriter.write(entry.getKey() + "\n");
-                                    display[idx++] = "Word: " + entry.getKey() + " - " + "Meaning: " + entry.getValue();
+                                    ArrayList<String> tmpArr = entry.getValue();
+                                    for(String s : tmpArr)
+                                        model.addRow(new String[]{entry.getKey(), s});
                                     iterator.remove();
                                 }
                                 bufferedWriter.close();
@@ -202,7 +207,6 @@ public class Main {
                                 System.out.println(exception.getMessage());
                             }
                         }
-                        list.setListData(display);
                         searchFrame.dispose();
                     }
                 });
@@ -211,6 +215,7 @@ public class Main {
                 searchFrame.add(byDefinition);
                 searchFrame.pack();
                 searchFrame.setVisible(true);
+                searchFrame.setLocationRelativeTo(null);
             }
         });
 
@@ -218,9 +223,11 @@ public class Main {
         frame.add(mainPanel);
         frame.pack();
         frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
     }
-    public static void viewHistory(){
+    public static void viewHistory(Main mainObj){
         JFrame frame = new JFrame("History");
+        String[] title = {"Slang Word", "Meaning"};
 
         JPanel constrainPanel = new JPanel(new GridBagLayout());
         GridBagConstraints constraint = new GridBagConstraints();
@@ -230,19 +237,25 @@ public class Main {
         constraint.gridx = 0;
         constraint.gridy = 1;
         constraint.insets = new Insets(5,5,5,5);
-        JList<String> list = new JList<>();
-        JScrollPane scrollPane = new JScrollPane(list);
+        DefaultTableModel model = new DefaultTableModel(new String[0][], title);
+        JTable table = new JTable(model);
+        JScrollPane scrollPane = new JScrollPane(table);
         constrainPanel.add(scrollPane, constraint);
 
-        Vector<String> display = new Vector<>();
         try {
             FileReader fileReader = new FileReader("data/history.txt");
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             String lines;
             while((lines = bufferedReader.readLine()) != null)
-                if(!lines.equals(""))
-                    display.add(lines);
-            list.setListData(display);
+                if(!lines.equals("")) {
+                    ArrayList<String> arr = mainObj.slangWord.findByWord(lines);
+                    if(arr != null)
+                        for(String s : arr)
+                            model.addRow(new String[]{lines, s});
+                    else
+                        model.addRow(new String[]{lines, "#------This slang word is deleted------#"});
+                }
+            bufferedReader.close();
         }
         catch (IOException exception){
             System.out.println(exception.getMessage());
@@ -251,6 +264,7 @@ public class Main {
         frame.add(constrainPanel);
         frame.pack();
         frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
     }
     public static void addSlangWord(Main mainObj){
         String[] labelName = {"Slang word: ", "Meaning: "};
@@ -324,6 +338,7 @@ public class Main {
                     addFrame.add(duplicateButton);
                     addFrame.pack();
                     addFrame.setVisible(true);
+                    addFrame.setLocationRelativeTo(null);
                 }
             }
         });
@@ -339,6 +354,7 @@ public class Main {
         addSlangWordFrame.add(mainPanel);
         addSlangWordFrame.pack();
         addSlangWordFrame.setVisible(true);
+        addSlangWordFrame.setLocationRelativeTo(null);
     }
     public static void searchAndEdit(Main mainObj){
         JFrame frame = new JFrame("Search for slang word");
@@ -396,6 +412,7 @@ public class Main {
         frame.add(mainPanel);
         frame.pack();
         frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
     }
     public static void editSlangWord(Main mainObj, String word){
         ArrayList<String> meaning = mainObj.slangWord.findByWord(word);
@@ -477,6 +494,7 @@ public class Main {
         editSlangWordFrame.add(mainPanel);
         editSlangWordFrame.pack();
         editSlangWordFrame.setVisible(true);
+        editSlangWordFrame.setLocationRelativeTo(null);
     }
     public static void deleteSlangWord(Main mainObj){
         JFrame frame = new JFrame("Delete a slang word");
@@ -537,6 +555,7 @@ public class Main {
         frame.add(mainPanel);
         frame.pack();
         frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
     }
     public static void resetToOrigin(Main mainObj){
         try{
@@ -555,8 +574,7 @@ public class Main {
         }
     }
     public static void randomSlangWord(Main mainObj){
-        String randomWord = mainObj.slangWord.randomSlangWord();
-        ArrayList<String>meaning = mainObj.slangWord.findByWord(randomWord);
+        String[] title = {"Slang Word", "Meaning"};
         JFrame editSlangWordFrame = new JFrame("On this day slang word");
 
         JPanel constraintPanel = new JPanel();
@@ -569,42 +587,38 @@ public class Main {
         constraint.weightx = 0;
         constraint.weighty = 0;
         constraint.ipadx = 5;
-        JLabel label = new JLabel("Slang Word:");
-        constraintPanel.add(label, constraint);
+        constraint.insets = new Insets(5,5,5,5);
+        JButton button = new JButton("Random a slang word");
+        constraintPanel.add(button, constraint);
 
         constraint.fill = GridBagConstraints.BOTH;
         constraint.weightx = 1;
         constraint.weighty = 1;
-        constraint.gridx = 1;
-        constraint.gridy = 0;
-        constraint.insets = new Insets(5,5,5,5);
-        JTextField slangWord = new JTextField(40);
-        slangWord.setText(randomWord);
-        constraintPanel.add(slangWord, constraint);
+        constraint.gridwidth = 3;
+        constraint.gridx = 0;
+        constraint.gridy = 1;
+        constraint.insets = new Insets(15,5,5,5);
+        DefaultTableModel model = new DefaultTableModel(new String[0][], title);
+        JTable table = new JTable(model);
+        JScrollPane scrollPane = new JScrollPane(table);
+        constraintPanel.add(scrollPane, constraint);
 
-        JTextField[] textFieldArray = new JTextField[meaning.size()];
-        for (int i = 0; i < meaning.size(); i++) {
-            constraint.anchor = GridBagConstraints.EAST;
-            constraint.gridx = 0;
-            constraint.gridy = i + 2;
-            constraint.weightx = 0;
-            constraint.weighty = 0;
-            constraint.ipadx = 5;
-            constraintPanel.add(new JLabel("Meaning " + (i + 1) + ":"), constraint);
-            constraint.fill = GridBagConstraints.BOTH;
-            constraint.weightx = 1;
-            constraint.weighty = 1;
-            constraint.gridx = 1;
-            constraint.gridy = i + 2;
-            constraint.insets = new Insets(5,5,5,5);
-            textFieldArray[i] = new JTextField(40);
-            textFieldArray[i].setText(meaning.get(i));
-            constraintPanel.add(textFieldArray[i], constraint);
-        }
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for(int i = model.getRowCount() - 1; i >= 0; i--)
+                    model.removeRow(i);
+                String randomWord = mainObj.slangWord.randomSlangWord();
+                ArrayList<String> meaning = mainObj.slangWord.findByWord(randomWord);
+                for(String s : meaning)
+                    model.addRow(new String[]{randomWord, s});
+            }
+        });
 
         editSlangWordFrame.add(constraintPanel);
         editSlangWordFrame.pack();
         editSlangWordFrame.setVisible(true);
+        editSlangWordFrame.setLocationRelativeTo(null);
     }
     public static void generateQuiz(Main mainObj){
         JFrame frame = new JFrame("Quiz");
@@ -627,12 +641,14 @@ public class Main {
             }
         });
 
-        panel.setLayout(new GridLayout());
+        panel.setLayout(new GridLayout(1,2,5,5));
+        panel.setBorder(new EmptyBorder(new Insets(10, 10, 10, 10)));
         panel.add(buttonWord);
         panel.add(buttonDefinition);
         frame.add(panel);
         frame.pack();
         frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
     }
     public static void quizWithWord(Main mainObj){
         ArrayList<String> choices = new ArrayList<>();
@@ -698,6 +714,7 @@ public class Main {
         frame.add(panel);
         frame.pack();
         frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
     }
     public static void quizWithDefinition(Main mainObj){
         ArrayList<String> choices = new ArrayList<>();
@@ -763,5 +780,6 @@ public class Main {
         frame.add(panel);
         frame.pack();
         frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
     }
 }
