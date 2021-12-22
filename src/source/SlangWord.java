@@ -90,10 +90,9 @@ public class SlangWord {
         }
     }
 
-    public void editSlangWord(String word, ArrayList<String> meaning){
-        this.slangDictionary.remove(word);
-        meaning.removeAll(Collections.singleton(""));
-        this.slangDictionary.put(word, meaning);
+    public void editSlangWord(String originWord,String newWord, ArrayList<String> meaning){
+        this.slangDictionary.remove(originWord);
+        this.slangDictionary.put(newWord, meaning);
         saveToFile("data/slang.txt");
     }
 

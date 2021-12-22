@@ -2,6 +2,7 @@ package source;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -108,8 +109,6 @@ public class Main {
         JPanel constrainPanel = new JPanel(new GridBagLayout());
 
         constraint.fill = GridBagConstraints.WEST;
-        constraint.weightx = 1;
-        constraint.weighty = 1;
         constraint.gridx = 0;
         constraint.gridy = 0;
         constraint.insets = new Insets(5,5,5,5);
@@ -117,8 +116,6 @@ public class Main {
         constrainPanel.add(searchLabel, constraint);
 
         constraint.fill = GridBagConstraints.BOTH;
-        constraint.weightx = 1;
-        constraint.weighty = 1;
         constraint.gridx = 1;
         constraint.gridy = 0;
         constraint.insets = new Insets(5,5,5,5);
@@ -127,16 +124,12 @@ public class Main {
 
         JButton button = new JButton("Search");
         constraint.fill = GridBagConstraints.EAST;
-        constraint.weightx = 1;
-        constraint.weighty = 1;
         constraint.gridx = 2;
         constraint.gridy = 0;
         constraint.insets = new Insets(5,5,5,5);
         constrainPanel.add(button, constraint);
 
         constraint.fill = GridBagConstraints.BOTH;
-        constraint.weightx = 1;
-        constraint.weighty = 1;
         constraint.gridwidth = 3;
         constraint.gridx = 0;
         constraint.gridy = 1;
@@ -146,16 +139,23 @@ public class Main {
         JScrollPane scrollPane = new JScrollPane(table);
         constrainPanel.add(scrollPane, constraint);
 
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+        table.setRowHeight(30);
+
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame searchFrame = new JFrame("Search");
                 JButton byDefinition = new JButton("Search by definition");
                 JButton byWord = new JButton("Search by word");
-                searchFrame.setLayout(new GridLayout());
+
                 byWord.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        searchFrame.dispose();
                         for(int i = model.getRowCount() - 1; i >= 0; i--)
                             model.removeRow(i);
                         String keyword = searchField.getText();
@@ -176,13 +176,13 @@ public class Main {
                                 System.out.println(exception.getMessage());
                             }
                         }
-                        searchFrame.dispose();
                     }
                 });
 
                 byDefinition.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        searchFrame.dispose();
                         for(int i = model.getRowCount() - 1; i >= 0; i--)
                             model.removeRow(i);
                         HashMap<String, ArrayList<String>> result = mainObj.slangWord.findByMeaning(searchField.getText());
@@ -207,12 +207,13 @@ public class Main {
                                 System.out.println(exception.getMessage());
                             }
                         }
-                        searchFrame.dispose();
                     }
                 });
-
-                searchFrame.add(byWord);
-                searchFrame.add(byDefinition);
+                JPanel panel = new JPanel(new GridLayout(1,2,5,5));
+                panel.setBorder(new EmptyBorder(new Insets(10, 10, 10, 10)));
+                panel.add(byWord);
+                panel.add(byDefinition);
+                searchFrame.add(panel);
                 searchFrame.pack();
                 searchFrame.setVisible(true);
                 searchFrame.setLocationRelativeTo(null);
@@ -232,8 +233,6 @@ public class Main {
         JPanel constrainPanel = new JPanel(new GridBagLayout());
         GridBagConstraints constraint = new GridBagConstraints();
         constraint.fill = GridBagConstraints.BOTH;
-        constraint.weightx = 1;
-        constraint.weighty = 1;
         constraint.gridx = 0;
         constraint.gridy = 1;
         constraint.insets = new Insets(5,5,5,5);
@@ -241,6 +240,12 @@ public class Main {
         JTable table = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(table);
         constrainPanel.add(scrollPane, constraint);
+
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+        table.setRowHeight(30);
 
         try {
             FileReader fileReader = new FileReader("data/history.txt");
@@ -269,7 +274,7 @@ public class Main {
     public static void addSlangWord(Main mainObj){
         String[] labelName = {"Slang word: ", "Meaning: "};
         JTextField[] textFieldArray = new JTextField[2];
-        JFrame addSlangWordFrame = new JFrame("Add a slang word");
+        JFrame addSlangWordFrame = new JFrame("Add A Slang Word");
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -281,14 +286,10 @@ public class Main {
             constraint.anchor = GridBagConstraints.EAST;
             constraint.gridx = 0;
             constraint.gridy = i;
-            constraint.weightx = 0;
-            constraint.weighty = 0;
             constraint.ipadx = 5;
             JLabel label = new JLabel(labelName[i]);
             constraintPanel.add(label, constraint);
             constraint.fill = GridBagConstraints.BOTH;
-            constraint.weightx = 1;
-            constraint.weighty = 1;
             constraint.gridx = 1;
             constraint.gridy = i;
             constraint.insets = new Insets(5,5,5,5);
@@ -310,35 +311,17 @@ public class Main {
                     JOptionPane.showMessageDialog(addSlangWordFrame, "Slang word added!", "Message", JOptionPane.INFORMATION_MESSAGE);
                 }
                 else {
-                    JFrame addFrame = new JFrame("Add slang word option");
-                    JOptionPane.showMessageDialog(addFrame, "Slang word existed!", "Message", JOptionPane.WARNING_MESSAGE);
-                    JButton duplicateButton = new JButton("Duplicate slang word");
-                    JButton overwriteButton = new JButton("Overwrite slang word");
-                    addFrame.setLayout(new GridLayout());
+                    String[] options = {"Duplicate", "Overwrite" };
+                    int choice = JOptionPane.showOptionDialog(null, "'" + textFieldArray[0].getText() + "' have already existed in the slang words list", "Slang word existed", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, null);
 
-                    duplicateButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            mainObj.slangWord.duplicateSlangWord(textFieldArray[0].getText(), textFieldArray[1].getText());
-                            addFrame.dispose();
-                            JOptionPane.showMessageDialog(addFrame, "Slang word duplicated!", "Message", JOptionPane.INFORMATION_MESSAGE);
-                        }
-                    });
-
-                    overwriteButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            mainObj.slangWord.overwriteSlangWord(textFieldArray[0].getText(), textFieldArray[1].getText());
-                            addFrame.dispose();
-                            JOptionPane.showMessageDialog(addFrame, "Slang word overwritten!", "Message", JOptionPane.INFORMATION_MESSAGE);
-                        }
-                    });
-
-                    addFrame.add(overwriteButton);
-                    addFrame.add(duplicateButton);
-                    addFrame.pack();
-                    addFrame.setVisible(true);
-                    addFrame.setLocationRelativeTo(null);
+                    if(choice == 0){
+                        mainObj.slangWord.duplicateSlangWord(textFieldArray[0].getText(), textFieldArray[1].getText());
+                        JOptionPane.showMessageDialog(null, "Slang word duplicated!", "Message", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    else if(choice == 1){
+                        mainObj.slangWord.overwriteSlangWord(textFieldArray[0].getText(), textFieldArray[1].getText());
+                        JOptionPane.showMessageDialog(null, "Slang word overwritten!", "Message", JOptionPane.INFORMATION_MESSAGE);
+                    }
                 }
             }
         });
@@ -357,24 +340,20 @@ public class Main {
         addSlangWordFrame.setLocationRelativeTo(null);
     }
     public static void searchAndEdit(Main mainObj){
-        JFrame frame = new JFrame("Search for slang word");
+        JFrame frame = new JFrame("Search For Edit");
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         GridBagConstraints constraint = new GridBagConstraints();
         JPanel constrainPanel = new JPanel(new GridBagLayout());
 
         constraint.fill = GridBagConstraints.BOTH;
-        constraint.weightx = 1;
-        constraint.weighty = 1;
         constraint.gridx = 0;
         constraint.gridy = 0;
         constraint.insets = new Insets(5,5,5,5);
-        JLabel label = new JLabel("Search: ");
+        JLabel label = new JLabel("Search:");
         constrainPanel.add(label, constraint);
 
         constraint.fill = GridBagConstraints.BOTH;
-        constraint.weightx = 1;
-        constraint.weighty = 1;
         constraint.gridx = 1;
         constraint.gridy = 0;
         constraint.insets = new Insets(5,5,5,5);
@@ -415,8 +394,9 @@ public class Main {
         frame.setLocationRelativeTo(null);
     }
     public static void editSlangWord(Main mainObj, String word){
+        final String originWord = word;
         ArrayList<String> meaning = mainObj.slangWord.findByWord(word);
-        JFrame editSlangWordFrame = new JFrame("Edit a slang word");
+        JFrame editSlangWordFrame = new JFrame("Edit A Slang Word");
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -427,15 +407,11 @@ public class Main {
         constraint.anchor = GridBagConstraints.EAST;
         constraint.gridx = 0;
         constraint.gridy = 0;
-        constraint.weightx = 0;
-        constraint.weighty = 0;
         constraint.ipadx = 5;
         JLabel label = new JLabel("Slang Word:");
         constraintPanel.add(label, constraint);
 
         constraint.fill = GridBagConstraints.BOTH;
-        constraint.weightx = 1;
-        constraint.weighty = 1;
         constraint.gridx = 1;
         constraint.gridy = 0;
         constraint.insets = new Insets(5,5,5,5);
@@ -448,13 +424,12 @@ public class Main {
             constraint.anchor = GridBagConstraints.EAST;
             constraint.gridx = 0;
             constraint.gridy = i + 2;
-            constraint.weightx = 0;
-            constraint.weighty = 0;
             constraint.ipadx = 5;
-            constraintPanel.add(new JLabel("Meaning " + (i + 1) + ":"), constraint);
+            if(meaning.size() == 1)
+                constraintPanel.add(new JLabel("Meaning:"), constraint);
+            else
+                constraintPanel.add(new JLabel("Meaning " + (i + 1) + ":"), constraint);
             constraint.fill = GridBagConstraints.BOTH;
-            constraint.weightx = 1;
-            constraint.weighty = 1;
             constraint.gridx = 1;
             constraint.gridy = i + 2;
             constraint.insets = new Insets(5,5,5,5);
@@ -475,11 +450,21 @@ public class Main {
                 String word = slangWord.getText();
                 ArrayList<String>meaning = new ArrayList<>();
                 for (JTextField jTextField : textFieldArray) {
-                    meaning.add(jTextField.getText());
+                    if(!Objects.equals(jTextField.getText(), ""))
+                        meaning.add(jTextField.getText());
                 }
-                mainObj.slangWord.editSlangWord(word, meaning);
-                JOptionPane.showMessageDialog(editSlangWordFrame, "Slang word saved!", "Message", JOptionPane.INFORMATION_MESSAGE);
-                editSlangWordFrame.dispose();
+                if(meaning.size() > 0) {
+                    if(!Objects.equals(originWord, word))
+                        if(mainObj.slangWord.findByWord(word) != null) {
+                            JOptionPane.showMessageDialog(null, "Slang word existed!", "Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    mainObj.slangWord.editSlangWord(originWord, word, meaning);
+                    JOptionPane.showMessageDialog(editSlangWordFrame, "Slang word saved!", "Message", JOptionPane.INFORMATION_MESSAGE);
+                    editSlangWordFrame.dispose();
+                }
+                else
+                    JOptionPane.showMessageDialog(null, "Slang word must have at least 1 meaning!", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
         cancelButton.addActionListener(new ActionListener() {
@@ -497,15 +482,13 @@ public class Main {
         editSlangWordFrame.setLocationRelativeTo(null);
     }
     public static void deleteSlangWord(Main mainObj){
-        JFrame frame = new JFrame("Delete a slang word");
+        JFrame frame = new JFrame("Delete A Slang Word");
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         GridBagConstraints constraint = new GridBagConstraints();
         JPanel constrainPanel = new JPanel(new GridBagLayout());
 
         constraint.fill = GridBagConstraints.BOTH;
-        constraint.weightx = 1;
-        constraint.weighty = 1;
         constraint.gridx = 0;
         constraint.gridy = 0;
         constraint.insets = new Insets(5,5,5,5);
@@ -513,8 +496,6 @@ public class Main {
         constrainPanel.add(label, constraint);
 
         constraint.fill = GridBagConstraints.BOTH;
-        constraint.weightx = 1;
-        constraint.weighty = 1;
         constraint.gridx = 1;
         constraint.gridy = 0;
         constraint.insets = new Insets(5,5,5,5);
@@ -558,42 +539,40 @@ public class Main {
         frame.setLocationRelativeTo(null);
     }
     public static void resetToOrigin(Main mainObj){
-        try{
-            BufferedReader bufferedReader = new BufferedReader(new FileReader("data/slang(origin).txt"));
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("data/slang.txt"));
-            String lines;
-            while((lines = bufferedReader.readLine()) != null)
-                bufferedWriter.write(lines + "\n");
-            bufferedReader.close();
-            bufferedWriter.close();
-            mainObj.slangWord = new SlangWord("data/slang.txt");
-            JOptionPane.showMessageDialog(null, "Slang words list reset!", "Reset origin slang words list", JOptionPane.INFORMATION_MESSAGE);
-        }
-        catch (IOException exception){
-            System.out.println(exception.getMessage());
+        int confirm = JOptionPane.showConfirmDialog(null, "Are you sure to reset the slang words list", "Reset confirm", JOptionPane.YES_NO_OPTION);
+        if(confirm == 0) {
+            try {
+                BufferedReader bufferedReader = new BufferedReader(new FileReader("data/slang(origin).txt"));
+                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("data/slang.txt"));
+                String lines;
+                while ((lines = bufferedReader.readLine()) != null)
+                    bufferedWriter.write(lines + "\n");
+                bufferedReader.close();
+                bufferedWriter.close();
+                mainObj.slangWord = new SlangWord("data/slang.txt");
+                JOptionPane.showMessageDialog(null, "Slang words list reset!", "Reset origin slang words list", JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException exception) {
+                System.out.println(exception.getMessage());
+            }
         }
     }
     public static void randomSlangWord(Main mainObj){
         String[] title = {"Slang Word", "Meaning"};
-        JFrame editSlangWordFrame = new JFrame("On this day slang word");
+        JFrame randomSlangWordFrame = new JFrame("On This Day Slang Word");
 
         JPanel constraintPanel = new JPanel();
         constraintPanel.setLayout(new GridBagLayout());
 
         GridBagConstraints constraint = new GridBagConstraints();
-        constraint.anchor = GridBagConstraints.EAST;
+        constraint.gridwidth = 3;
         constraint.gridx = 0;
         constraint.gridy = 0;
-        constraint.weightx = 0;
-        constraint.weighty = 0;
         constraint.ipadx = 5;
-        constraint.insets = new Insets(5,5,5,5);
-        JButton button = new JButton("Random a slang word");
+        constraint.insets = new Insets(10,5,5,5);
+        JButton button = new JButton("Click to random a slang word");
         constraintPanel.add(button, constraint);
 
         constraint.fill = GridBagConstraints.BOTH;
-        constraint.weightx = 1;
-        constraint.weighty = 1;
         constraint.gridwidth = 3;
         constraint.gridx = 0;
         constraint.gridy = 1;
@@ -602,6 +581,12 @@ public class Main {
         JTable table = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(table);
         constraintPanel.add(scrollPane, constraint);
+
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+        table.setRowHeight(30);
 
         button.addActionListener(new ActionListener() {
             @Override
@@ -615,10 +600,10 @@ public class Main {
             }
         });
 
-        editSlangWordFrame.add(constraintPanel);
-        editSlangWordFrame.pack();
-        editSlangWordFrame.setVisible(true);
-        editSlangWordFrame.setLocationRelativeTo(null);
+        randomSlangWordFrame.add(constraintPanel);
+        randomSlangWordFrame.pack();
+        randomSlangWordFrame.setVisible(true);
+        randomSlangWordFrame.setLocationRelativeTo(null);
     }
     public static void generateQuiz(Main mainObj){
         JFrame frame = new JFrame("Quiz");
@@ -655,63 +640,86 @@ public class Main {
         for(int i = 0; i < 4; i++)
             choices.add(mainObj.slangWord.randomSlangWord());
         int randomNumber = (int) Math.floor(Math.random() * 3);
-        JFrame frame = new JFrame(choices.get(randomNumber) + "?");
-        JPanel panel = new JPanel(new GridLayout(2, 2));
+        JFrame frame = new JFrame("Quiz With Word");
+        JLabel question = new JLabel("What does '" + choices.get(randomNumber) + "' means?");
+        JPanel buttonPanel = new JPanel(new GridLayout(2, 2, 15, 15));
+        JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER,0,20));
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBorder(new EmptyBorder(new Insets(0,15,15,15)));
 
         JButton buttonA = new JButton(mainObj.slangWord.getMeaning(choices.get(0)));
         JButton buttonB = new JButton(mainObj.slangWord.getMeaning(choices.get(1)));
         JButton buttonC = new JButton(mainObj.slangWord.getMeaning(choices.get(2)));
         JButton buttonD = new JButton(mainObj.slangWord.getMeaning(choices.get(3)));
 
-        buttonA.addActionListener(new ActionListener() {
+        ActionListener actionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(randomNumber == 0)
-                    JOptionPane.showMessageDialog(null,"RIGHT", "Result", JOptionPane.INFORMATION_MESSAGE);
-                else{
-                    JOptionPane.showMessageDialog(null,"WRONG", "Result", JOptionPane.ERROR_MESSAGE);
+                boolean isWrong = false;
+                if(e.getSource() == buttonA){
+                    if(randomNumber == 0)
+                        buttonA.setBackground(Color.GREEN);
+                    else {
+                        buttonA.setBackground(Color.RED);
+                        isWrong = true;
+                    }
                 }
-            }
-        });
-
-        buttonB.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(randomNumber == 1)
-                    JOptionPane.showMessageDialog(null,"RIGHT", "Result", JOptionPane.INFORMATION_MESSAGE);
-                else{
-                    JOptionPane.showMessageDialog(null,"WRONG", "Result", JOptionPane.ERROR_MESSAGE);
+                else if(e.getSource() == buttonB){
+                    if(randomNumber == 1)
+                        buttonB.setBackground(Color.GREEN);
+                    else{
+                        buttonB.setBackground(Color.RED);
+                        isWrong = true;
+                    }
                 }
-            }
-        });
-
-        buttonC.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(randomNumber == 2)
-                    JOptionPane.showMessageDialog(null,"RIGHT", "Result", JOptionPane.INFORMATION_MESSAGE);
-                else{
-                    JOptionPane.showMessageDialog(null,"WRONG", "Result", JOptionPane.ERROR_MESSAGE);
+                else if(e.getSource() == buttonC){
+                    if(randomNumber == 2)
+                        buttonC.setBackground(Color.GREEN);
+                    else{
+                        buttonC.setBackground(Color.RED);
+                        isWrong = true;
+                    }
                 }
-            }
-        });
-
-        buttonD.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(randomNumber == 3)
-                    JOptionPane.showMessageDialog(null,"RIGHT", "Result", JOptionPane.INFORMATION_MESSAGE);
-                else{
-                    JOptionPane.showMessageDialog(null,"WRONG", "Result", JOptionPane.ERROR_MESSAGE);
+                else {
+                    if(randomNumber == 3)
+                        buttonD.setBackground(Color.GREEN);
+                    else{
+                        buttonD.setBackground(Color.RED);
+                        isWrong = true;
+                    }
                 }
-            }
-        });
+                if(isWrong){
+                    if(randomNumber == 0)
+                        buttonA.setBackground(Color.GREEN);
+                    else if(randomNumber == 1)
+                        buttonB.setBackground(Color.GREEN);
+                    else if(randomNumber == 2)
+                        buttonC.setBackground(Color.GREEN);
+                    else
+                        buttonD.setBackground(Color.GREEN);
+                }
 
-        panel.add(buttonA);
-        panel.add(buttonB);
-        panel.add(buttonC);
-        panel.add(buttonD);
-        frame.add(panel);
+                buttonA.setEnabled(false);
+                buttonB.setEnabled(false);
+                buttonC.setEnabled(false);
+                buttonD.setEnabled(false);
+            }
+        };
+
+        buttonA.addActionListener(actionListener);
+        buttonB.addActionListener(actionListener);
+        buttonC.addActionListener(actionListener);
+        buttonD.addActionListener(actionListener);
+
+        buttonPanel.add(buttonA);
+        buttonPanel.add(buttonB);
+        buttonPanel.add(buttonC);
+        buttonPanel.add(buttonD);
+        labelPanel.add(question);
+        mainPanel.add(labelPanel);
+        mainPanel.add(buttonPanel);
+        frame.add(mainPanel);
         frame.pack();
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
@@ -721,63 +729,86 @@ public class Main {
         for(int i = 0; i < 4; i++)
             choices.add(mainObj.slangWord.randomSlangWord());
         int randomNumber = (int) Math.floor(Math.random() * 3);
-        JFrame frame = new JFrame(mainObj.slangWord.getMeaning(choices.get(randomNumber)) + "?");
-        JPanel panel = new JPanel(new GridLayout(2, 2));
+        JFrame frame = new JFrame("Quiz With Definition");
+        JLabel question = new JLabel("Which slang word below has the meaning '" + mainObj.slangWord.getMeaning(choices.get(randomNumber)) + "'?");
+        JPanel buttonPanel = new JPanel(new GridLayout(2, 2, 15, 15));
+        JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER,0,20));
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBorder(new EmptyBorder(new Insets(0,15,15,15)));
 
         JButton buttonA = new JButton(choices.get(0));
         JButton buttonB = new JButton(choices.get(1));
         JButton buttonC = new JButton(choices.get(2));
         JButton buttonD = new JButton(choices.get(3));
 
-        buttonA.addActionListener(new ActionListener() {
+        ActionListener actionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(randomNumber == 0)
-                    JOptionPane.showMessageDialog(null,"RIGHT", "Result", JOptionPane.INFORMATION_MESSAGE);
-                else{
-                    JOptionPane.showMessageDialog(null,"WRONG", "Result", JOptionPane.ERROR_MESSAGE);
+                boolean isWrong = false;
+                if(e.getSource() == buttonA){
+                    if(randomNumber == 0)
+                        buttonA.setBackground(Color.GREEN);
+                    else {
+                        buttonA.setBackground(Color.RED);
+                        isWrong = true;
+                    }
                 }
-            }
-        });
-
-        buttonB.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(randomNumber == 1)
-                    JOptionPane.showMessageDialog(null,"RIGHT", "Result", JOptionPane.INFORMATION_MESSAGE);
-                else{
-                    JOptionPane.showMessageDialog(null,"WRONG", "Result", JOptionPane.ERROR_MESSAGE);
+                else if(e.getSource() == buttonB){
+                    if(randomNumber == 1)
+                        buttonB.setBackground(Color.GREEN);
+                    else{
+                        buttonB.setBackground(Color.RED);
+                        isWrong = true;
+                    }
                 }
-            }
-        });
-
-        buttonC.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(randomNumber == 2)
-                    JOptionPane.showMessageDialog(null,"RIGHT", "Result", JOptionPane.INFORMATION_MESSAGE);
-                else{
-                    JOptionPane.showMessageDialog(null,"WRONG", "Result", JOptionPane.ERROR_MESSAGE);
+                else if(e.getSource() == buttonC){
+                    if(randomNumber == 2)
+                        buttonC.setBackground(Color.GREEN);
+                    else{
+                        buttonC.setBackground(Color.RED);
+                        isWrong = true;
+                    }
                 }
-            }
-        });
-
-        buttonD.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(randomNumber == 3)
-                    JOptionPane.showMessageDialog(null,"RIGHT", "Result", JOptionPane.INFORMATION_MESSAGE);
-                else{
-                    JOptionPane.showMessageDialog(null,"WRONG", "Result", JOptionPane.ERROR_MESSAGE);
+                else {
+                    if(randomNumber == 3)
+                        buttonD.setBackground(Color.GREEN);
+                    else{
+                        buttonD.setBackground(Color.RED);
+                        isWrong = true;
+                    }
                 }
-            }
-        });
+                if(isWrong){
+                    if(randomNumber == 0)
+                        buttonA.setBackground(Color.GREEN);
+                    else if(randomNumber == 1)
+                        buttonB.setBackground(Color.GREEN);
+                    else if(randomNumber == 2)
+                        buttonC.setBackground(Color.GREEN);
+                    else
+                        buttonD.setBackground(Color.GREEN);
+                }
 
-        panel.add(buttonA);
-        panel.add(buttonB);
-        panel.add(buttonC);
-        panel.add(buttonD);
-        frame.add(panel);
+                buttonA.setEnabled(false);
+                buttonB.setEnabled(false);
+                buttonC.setEnabled(false);
+                buttonD.setEnabled(false);
+            }
+        };
+
+        buttonA.addActionListener(actionListener);
+        buttonB.addActionListener(actionListener);
+        buttonC.addActionListener(actionListener);
+        buttonD.addActionListener(actionListener);
+
+        buttonPanel.add(buttonA);
+        buttonPanel.add(buttonB);
+        buttonPanel.add(buttonC);
+        buttonPanel.add(buttonD);
+        labelPanel.add(question);
+        mainPanel.add(labelPanel);
+        mainPanel.add(buttonPanel);
+        frame.add(mainPanel);
         frame.pack();
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
